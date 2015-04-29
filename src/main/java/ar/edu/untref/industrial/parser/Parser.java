@@ -23,6 +23,12 @@ public class Parser {
 		String row = leerPrimerLinea(br);
 		while (row != null) {
 			String[] actual = row.split(SEPARATOR_FILE_ROW);
+			
+			String [] proximosSatelites = new String [12];
+			
+			for(int i = 11; i < 23; i++){
+				proximosSatelites[i-11] = actual [i];
+			}
 
 			RowFileGps rowFileGPS = new RowFileGps();
 			rowFileGPS.setFecha(actual[0]);
@@ -31,14 +37,17 @@ public class Parser {
 			rowFileGPS.setUniLat(actual[3]);
 			rowFileGPS.setValLong(actual[4]);
 			rowFileGPS.setUniLong(actual[5]);
+			
 			rowFileGPS.setSatTrack(Integer.valueOf(actual[6]));
 
 			for (int i = 0; i < rowFileGPS.getSatTrack(); i++) {
-				Satelite satelite = new Satelite();
-				satelite.setPrn(Integer.valueOf(actual[27 + i * 4]));
-				satelite.setElev(Integer.valueOf(actual[28 + i * 4]));
-				satelite.setAz(Integer.valueOf(actual[29 + i * 4]));
-				rowFileGPS.getSatelites().add(satelite);
+				if(!Integer.valueOf(proximosSatelites[i]).equals(0)){
+					Satelite satelite = new Satelite();
+					satelite.setPrn(Integer.valueOf(actual[27 + i * 4]));
+					satelite.setElev(Integer.valueOf(actual[28 + i * 4]));
+					satelite.setAz(Integer.valueOf(actual[29 + i * 4]));
+					rowFileGPS.getSatelites().add(satelite);
+				}
 			}
 
 			resultado.add(rowFileGPS);
