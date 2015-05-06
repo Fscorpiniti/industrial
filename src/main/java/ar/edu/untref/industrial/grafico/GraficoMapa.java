@@ -3,7 +3,9 @@ package ar.edu.untref.industrial.grafico;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -51,19 +53,17 @@ public class GraficoMapa extends JComponent {
 	}
 
 	private void drawingSatellites() {
+		Image imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/icono.gif");
+		
 		if (satelites != null) {
 			for (Satelite unSatelite: satelites) {
 				double elevacion = 90 - unSatelite.getElev();
 				double azimuth = -unSatelite.getAz() + 90;
-				float snr = unSatelite.getSnr() / 3;
 				
 				Point2D.Double pointSat = new Point2D.Double(center.x + Math.cos(Math.toRadians(azimuth))
 						* elevacion * size, center.y - Math.sin(Math.toRadians(azimuth))* elevacion * size);
 				
-				Ellipse2D.Double satelite = new Ellipse2D.Double(pointSat.x - snr/ 2, pointSat.y - snr/ 2, snr, snr);
-				
-				graphics2D.setPaint(Color.BLUE);
-				graphics2D.fill(satelite);
+				graphics2D.drawImage(imgSatelite, (int)pointSat.x, (int)pointSat.y, null);
 			}
 		}
 	}
