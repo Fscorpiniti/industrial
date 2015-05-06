@@ -5,6 +5,7 @@ public class Satelite {
 	private int prn;
 	private int elev;
 	private int az;
+	private int snr;
 	
 	public int getPrn() {
 		return prn;
@@ -23,6 +24,12 @@ public class Satelite {
 	}
 	public void setAz(int az) {
 		this.az = az;
+	}
+	public int getSnr() {
+		return snr;
+	}
+	public void setSnr(int snr) {
+		this.snr = snr;
 	}
 	
 }

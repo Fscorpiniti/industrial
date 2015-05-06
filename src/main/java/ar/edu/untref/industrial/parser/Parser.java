@@ -46,6 +46,7 @@ public class Parser {
 					satelite.setPrn(Integer.valueOf(actual[27 + i * 4]));
 					satelite.setElev(Integer.valueOf(actual[28 + i * 4]));
 					satelite.setAz(Integer.valueOf(actual[29 + i * 4]));
+					satelite.setSnr(Integer.valueOf(actual[30 + i * 4]));
 					rowFileGPS.getSatelites().add(satelite);
 				}
 			}

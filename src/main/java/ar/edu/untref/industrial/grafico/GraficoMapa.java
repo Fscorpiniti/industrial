@@ -5,9 +5,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
 
 import javax.swing.JComponent;
+
+import ar.edu.untref.industrial.model.Satelite;
 
 public class GraficoMapa extends JComponent {
 
@@ -15,6 +19,7 @@ public class GraficoMapa extends JComponent {
 	private Point center;
 	private double size = 2;
 	private Graphics2D graphics2D;
+	private List<Satelite>satelites;
 
 	/**
 	 * Recibe el punto del centro del grafico
@@ -26,8 +31,7 @@ public class GraficoMapa extends JComponent {
 	}
 
 	public void doDrawing() {
-		Rectangle2D.Double rectangle = new Rectangle2D.Double(0, 0, this.getWidth(), this
-				.getHeight());
+		Rectangle2D.Double rectangle = new Rectangle2D.Double(0, 0, this.getWidth(), this.getHeight());
 		
 		graphics2D.setColor(Color.white);
 		graphics2D.fill(rectangle);
@@ -41,6 +45,26 @@ public class GraficoMapa extends JComponent {
 			drawEllipse(result);
 
 			j = j + 10;
+		}
+		
+		this.drawingSatellites();
+	}
+
+	private void drawingSatellites() {
+		if (satelites != null) {
+			for (Satelite unSatelite: satelites) {
+				double elevacion = 90 - unSatelite.getElev();
+				double azimuth = -unSatelite.getAz() + 90;
+				float snr = unSatelite.getSnr() / 3;
+				
+				Point2D.Double pointSat = new Point2D.Double(center.x + Math.cos(Math.toRadians(azimuth))
+						* elevacion * size, center.y - Math.sin(Math.toRadians(azimuth))* elevacion * size);
+				
+				Ellipse2D.Double satelite = new Ellipse2D.Double(pointSat.x - snr/ 2, pointSat.y - snr/ 2, snr, snr);
+				
+				graphics2D.setPaint(Color.BLUE);
+				graphics2D.fill(satelite);
+			}
 		}
 	}
 
@@ -58,6 +82,14 @@ public class GraficoMapa extends JComponent {
 		super.paintComponent(g);
 		
 		doDrawing();
+	}
+
+	public List<Satelite> getSatelites() {
+		return satelites;
+	}
+
+	public void setSatelites(List<Satelite> satelites) {
+		this.satelites = satelites;
 	}
 
 }
