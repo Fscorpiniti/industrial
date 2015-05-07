@@ -5,6 +5,8 @@ import java.util.TimerTask;
 
 import ar.edu.untref.industrial.grafico.EstadoTimer;
 import ar.edu.untref.industrial.grafico.GraficoMapa;
+import ar.edu.untref.industrial.holder.VideoImageHolder;
+import ar.edu.untref.industrial.mp4.SequenceEncoder;
 
 public class Timer extends TimerTask {
 
@@ -13,7 +15,8 @@ public class Timer extends TimerTask {
 	private EstadoTimer estado;
 	private List<RowFileGps> rowsFile;
 	private int rowRecorrida;
-
+	private Boolean grabando = Boolean.FALSE;
+	
 	public Timer(GraficoMapa mapa, List<RowFileGps> rowsFile) {
 		this.timer = new java.util.Timer();
 		this.mapa = mapa;
@@ -27,12 +30,22 @@ public class Timer extends TimerTask {
 	public void run() {
 		if (this.estado.equals(EstadoTimer.CORRIENDO) && (rowRecorrida < rowsFile.size() - 1)) {
 			rowRecorrida = rowRecorrida + 1;
-			this.mapa.setSatelites(rowsFile.get(rowRecorrida).getSatelites());
+			this.mapa.update(rowsFile.get(rowRecorrida).getSatelites(), this.grabando);
 			this.mapa.repaint();
 		}
 	}
 
 	public void setEstado(EstadoTimer estado) {
 		this.estado = estado;
+	}
+
+	public void tomarImagenCadaMedioSegundo() {
+		this.grabando = Boolean.TRUE;
+		VideoImageHolder.getImages().clear();
+	}
+
+	public void exportarMp4() {
+		this.grabando = Boolean.FALSE;
+		SequenceEncoder.exportToMp4();
 	}
 }

@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -39,9 +38,17 @@ public class Form extends JFrame implements ActionListener {
 	}
 
 	private void initUI() {
-		setSize(900, 500);
+		setSize(1200, 500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		JPanel subPanel = cargarPaneles();
+
+		cargarBotones(subPanel);
+
+		timer.run();
+	}
+
+	private JPanel cargarPaneles() {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -58,7 +65,11 @@ public class Form extends JFrame implements ActionListener {
 		JPanel subPanel = new JPanel();
 		panel.add(subPanel, new GridBagConstraints());
 		subPanel.setLayout(new GridBagLayout());
+		
+		return subPanel;
+	}
 
+	private void cargarBotones(JPanel subPanel) {
 		JButton buttonPlay = new JButton();
 		buttonPlay.setText("PLAY");
 		buttonPlay.setPreferredSize(new Dimension(90, 30));
@@ -71,14 +82,29 @@ public class Form extends JFrame implements ActionListener {
 		JButton buttonPause = new JButton();
 		buttonPause.setText("PAUSA");
 		buttonPause.setPreferredSize(new Dimension(90, 30));
-		buttonPause.setIcon(new ImageIcon("imageIcon/pause.png"));
 		buttonPause.setFocusable(false);
 		buttonPause.setBackground(Color.white);
 		buttonPause.setActionCommand(AccionVideo.PAUSA.toString());
 		buttonPause.addActionListener(this);
 		subPanel.add(buttonPause, new GridBagConstraints());
-
-		timer.run();
+		
+		JButton buttonGrabar = new JButton();
+		buttonGrabar.setText("GRABAR");
+		buttonGrabar.setPreferredSize(new Dimension(90, 30));
+		buttonGrabar.setFocusable(false);
+		buttonGrabar.setBackground(Color.white);
+		buttonGrabar.setActionCommand(AccionVideo.GRABAR.toString());
+		buttonGrabar.addActionListener(this);
+		subPanel.add(buttonGrabar, new GridBagConstraints());
+		
+		JButton buttonDetenerGrab = new JButton();
+		buttonDetenerGrab.setText("DETENER GRABACION");
+		buttonDetenerGrab.setPreferredSize(new Dimension(160, 30));
+		buttonDetenerGrab.setFocusable(false);
+		buttonDetenerGrab.setBackground(Color.white);
+		buttonDetenerGrab.setActionCommand(AccionVideo.GRABAR.toString());
+		buttonDetenerGrab.addActionListener(this);
+		subPanel.add(buttonDetenerGrab, new GridBagConstraints());
 	}
 
 	@Override
@@ -89,6 +115,12 @@ public class Form extends JFrame implements ActionListener {
 			this.timer.setEstado(EstadoTimer.CORRIENDO);
 		} else if (name.equals(AccionVideo.PAUSA.toString())) {
 			this.timer.setEstado(EstadoTimer.PAUSA);
+		} else if (name.equals(AccionVideo.GRABAR.toString())) {
+			this.timer.setEstado(EstadoTimer.CORRIENDO);
+			this.timer.tomarImagenCadaMedioSegundo();
+		} else if (name.equals(AccionVideo.DETENER_GRABACION.toString())) {
+			this.timer.setEstado(EstadoTimer.PAUSA);
+			this.timer.exportarMp4();
 		}
 	}
 

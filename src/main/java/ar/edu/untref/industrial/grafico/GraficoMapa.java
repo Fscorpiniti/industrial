@@ -21,6 +21,7 @@ public class GraficoMapa extends JComponent {
 	private Point center;
 	private double size = 2;
 	private Graphics2D graphics2D;
+	private Boolean grabando;
 	private List<Satelite>satelites;
 
 	/**
@@ -60,10 +61,16 @@ public class GraficoMapa extends JComponent {
 				double elevacion = 90 - unSatelite.getElev();
 				double azimuth = -unSatelite.getAz() + 90;
 				
-				Point2D.Double pointSat = new Point2D.Double(center.x + Math.cos(Math.toRadians(azimuth))
-						* elevacion * size, center.y - Math.sin(Math.toRadians(azimuth))* elevacion * size);
+				double x = center.x + Math.cos(Math.toRadians(azimuth))* elevacion * size;
+				double y = center.y - Math.sin(Math.toRadians(azimuth))* elevacion * size;
+				
+				Point2D.Double pointSat = new Point2D.Double(x, y);
 				
 				graphics2D.drawImage(imgSatelite, (int)pointSat.x, (int)pointSat.y, null);
+			}
+			
+			if (grabando) {
+//				 VideoImageHolder.getImages().add(bufferedImage);
 			}
 		}
 	}
@@ -90,6 +97,11 @@ public class GraficoMapa extends JComponent {
 
 	public void setSatelites(List<Satelite> satelites) {
 		this.satelites = satelites;
+	}
+	
+	public void update(List<Satelite> satelites, Boolean grabando) {
+		this.satelites = satelites;
+		this.grabando = grabando;
 	}
 
 }
