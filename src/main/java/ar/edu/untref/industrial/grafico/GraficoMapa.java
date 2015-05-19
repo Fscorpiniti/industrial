@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -23,6 +24,8 @@ public class GraficoMapa extends JComponent {
 	private Graphics2D graphics2D;
 	private Boolean grabando;
 	private List<Satelite>satelites;
+	private List<RowFileGps> filasGps =new ArrayList<>();
+	private boolean trace= false;
 
 	/**
 	 * Recibe el punto del centro del grafico
@@ -38,7 +41,6 @@ public class GraficoMapa extends JComponent {
 		
 		graphics2D.setColor(Color.white);
 		graphics2D.fill(rectangle);
-		
 		graphics2D.setColor(Color.black);
 		
 		int j = 10;
@@ -49,26 +51,23 @@ public class GraficoMapa extends JComponent {
 
 			j = j + 10;
 		}
+		graphics2D.drawString("NORTE", 225,50);
+		graphics2D.drawString("OESTE", 20,250);
+		graphics2D.drawString("ESTE", 440,250);
+		graphics2D.drawString("SUR", 240,460);
+			this.drawingSatellites();
 		
-		this.drawingSatellites();
 	}
 
 	private void drawingSatellites() {
-		Image imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/icono.gif");
-		
+		RowFileGps fila = new RowFileGps();		
 		if (satelites != null) {
-			for (Satelite unSatelite: satelites) {
-				double elevacion = 90 - unSatelite.getElev();
-				double azimuth = -unSatelite.getAz() + 90;
-				
-				double x = center.x + Math.cos(Math.toRadians(azimuth))* elevacion * size;
-				double y = center.y - Math.sin(Math.toRadians(azimuth))* elevacion * size;
-				
-				Point2D.Double pointSat = new Point2D.Double(x, y);
-				
-				graphics2D.drawImage(imgSatelite, (int)pointSat.x, (int)pointSat.y, null);
-			}
-			
+			dibujar(satelites);
+			if(trace==true){	
+				dibujarTrace();
+				fila.getSatelites().addAll(satelites);
+				this.filasGps.add(fila);
+			} 
 			if (grabando) {
 //				 VideoImageHolder.getImages().add(bufferedImage);
 			}
@@ -102,6 +101,104 @@ public class GraficoMapa extends JComponent {
 	public void update(List<Satelite> satelites, Boolean grabando) {
 		this.satelites = satelites;
 		this.grabando = grabando;
+	}
+	
+	private Image getIcon(Satelite satelite) {
+
+		Image imgSatelite;
+
+		switch (satelite.getPrn()) {
+		case 11:
+			imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/iconoGreen.gif");
+			break;
+		case 13:
+			imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/iconoGray.gif");
+			break;
+		case 20:
+			imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/iconoBlue.gif");
+			break;
+		case 23:
+			imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/iconoOrange.gif");
+			break;
+		case 24:
+			imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/iconoRed.gif");
+			break;
+		case 32:
+			imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/iconoMagenta.gif");
+			break;
+		default:
+			imgSatelite = Toolkit.getDefaultToolkit().getImage("src/test/resources/iconoBlack.gif");
+			break;
+		}
+
+		return imgSatelite;
+	}
+
+	public void trace(boolean trace) {
+		this.trace= trace;
+		if(trace==false){
+			filasGps.clear();
+		}
+	}
+	
+	private void dibujar(List<Satelite>satelites){
+		for (Satelite unSatelite: satelites) {
+			Point2D.Double pointSat = calcularPunto(unSatelite);
+			graphics2D.setColor(getColor(unSatelite));
+			graphics2D.drawString("" + unSatelite.getPrn(), (int)pointSat.x, (int)pointSat.x);
+			graphics2D.drawImage(getIcon(unSatelite), (int)pointSat.x, (int)pointSat.y, null);
+		}
+	}
+	
+	private Point2D.Double calcularPunto(Satelite unSatelite){
+		Point2D.Double pointSat;
+		double elevacion = 90 - unSatelite.getElev();
+		double azimuth = -unSatelite.getAz() + 90;
+		double x = center.x + Math.cos(Math.toRadians(azimuth))* elevacion * size;
+		double y = center.y - Math.sin(Math.toRadians(azimuth))* elevacion * size;
+		pointSat = new Point2D.Double(x, y);
+		return pointSat;
+	}
+	
+	private void dibujarTrace(){
+		for (RowFileGps unaFila: filasGps) {
+			for (Satelite unSatelite: unaFila.getSatelites()) {
+				Point2D.Double pointSat = calcularPunto(unSatelite);
+				graphics2D.setColor(getColor(unSatelite));
+				graphics2D.fillRect((int)pointSat.x-1, (int)pointSat.y-1,2,2);
+			}
+	    }
+	}
+	
+	private Color getColor(Satelite satelite) {
+
+		Color color;
+
+		switch (satelite.getPrn()) {
+		case 11:
+			color = Color.GREEN;
+			break;
+		case 13:
+			color = Color.GRAY;
+			break;
+		case 20:
+			color = Color.BLUE;
+			break;
+		case 23:
+			color = Color.ORANGE;
+			break;
+		case 24:
+			color = Color.RED;
+			break;
+		case 32:
+			color = Color.MAGENTA;
+			break;
+		default:
+			color = Color.BLACK;
+			break;
+		}
+
+		return color;
 	}
 
 }

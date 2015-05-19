@@ -32,17 +32,16 @@ public class Form extends JFrame implements ActionListener {
 
 	public Form() {
 		graficoMapa = new GraficoMapa(new Point(250, 250));
-		timer = new Timer(this.graficoMapa, Parser.parsear(new File("src/test/resources/gps1.txt")));
+		timer = new Timer(this.graficoMapa, Parser.parsear(new File("src/gps1.txt")));
 		
 		initUI();
 	}
 
 	private void initUI() {
-		setSize(1200, 500);
+		setSize(1200, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel subPanel = cargarPaneles();
-
 		cargarBotones(subPanel);
 
 		timer.run();
@@ -105,6 +104,24 @@ public class Form extends JFrame implements ActionListener {
 		buttonDetenerGrab.setActionCommand(AccionVideo.GRABAR.toString());
 		buttonDetenerGrab.addActionListener(this);
 		subPanel.add(buttonDetenerGrab, new GridBagConstraints());
+		
+		JButton buttonTraceOn= new JButton();
+		buttonTraceOn.setText("ON");
+		buttonTraceOn.setPreferredSize(new Dimension(90, 30));
+		buttonTraceOn.setFocusable(false);
+		buttonTraceOn.setBackground(Color.white);
+		buttonTraceOn.setActionCommand(AccionVideo.TRACE_ON.toString());
+		buttonTraceOn.addActionListener(this);
+		subPanel.add(buttonTraceOn, new GridBagConstraints());
+		
+		JButton buttonTraceOff= new JButton();
+		buttonTraceOff.setText("OFF");
+		buttonTraceOff.setPreferredSize(new Dimension(90, 30));
+		buttonTraceOff.setFocusable(false);
+		buttonTraceOff.setBackground(Color.white);
+		buttonTraceOff.setActionCommand(AccionVideo.TRACE_OFF.toString());
+		buttonTraceOff.addActionListener(this);
+		subPanel.add(buttonTraceOff, new GridBagConstraints());
 	}
 
 	@Override
@@ -121,6 +138,10 @@ public class Form extends JFrame implements ActionListener {
 		} else if (name.equals(AccionVideo.DETENER_GRABACION.toString())) {
 			this.timer.setEstado(EstadoTimer.PAUSA);
 			this.timer.exportarMp4();
+		} else if (name.equals(AccionVideo.TRACE_ON.toString())){
+			this.graficoMapa.trace(true);
+		} else if (name.equals(AccionVideo.TRACE_OFF.toString())){
+			this.graficoMapa.trace(false);
 		}
 	}
 
